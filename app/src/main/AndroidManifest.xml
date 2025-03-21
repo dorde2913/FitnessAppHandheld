@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:name=".HandheldApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/fitlogo_round"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/fitlogo_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.FitnessApplicationHandheld"
+        tools:targetApi="31">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.FitnessApplicationHandheld">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service android:name=".services.WearMessageListenerService"
+            android:exported="true"
+            android:enabled="true">
+
+            <intent-filter>
+                <!-- listeners receive events that match the action and data filters -->
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data android:scheme="wear"/>
+                <data android:pathPrefix="/heartrate"/>
+                <data android:pathPrefix="/calories"/>
+                <data android:pathPrefix="/distance"/>
+                <data android:pathPrefix="/location"/>
+                <data android:pathPrefix="/speed"/>
+                <data android:pathPrefix="/steps_daily"/>
+                <data android:pathPrefix="/calories_daily"/>
+
+            </intent-filter>
+        </service>
+
+    </application>
+
+</manifest>
