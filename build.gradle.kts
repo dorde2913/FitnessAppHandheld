@@ -9,3 +9,9 @@ plugins {
     id("com.google.dagger.hilt.android") version "2.50" apply false
     alias(libs.plugins.kotlin.parcelize) apply false
 }
+
+buildscript {
+    dependencies {
+        classpath(libs.secrets.gradle.plugin)
+    }
+}

@@ -7,6 +7,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.fitnessapplicationhandheld.database.models.DailyHR
 import com.example.fitnessapplicationhandheld.database.models.HRList
 import com.example.fitnessapplicationhandheld.database.models.Location
 import com.example.fitnessapplicationhandheld.database.models.Workout
@@ -20,7 +21,8 @@ import java.time.Instant
     Workout::class,
     HRList::class,
     Location::class,
-    WorkoutLabel::class),
+    WorkoutLabel::class,
+    DailyHR::class),
     version = 1, exportSchema = false)
 abstract class WorkoutDatabase : RoomDatabase() {
     abstract fun workoutDao(): Dao
@@ -33,7 +35,7 @@ abstract class WorkoutDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     WorkoutDatabase::class.java,
-                    "workouts22"
+                    "workouts222"
                 ).addCallback(WorkoutDatabaseCallback(scope)).build()
                 INSTANCE = instance
                 // return instance
@@ -73,6 +75,11 @@ abstract class WorkoutDatabase : RoomDatabase() {
 
             workoutDao.insert(WorkoutLabel(label = "Push", color = Color.Red.toArgb()))
             workoutDao.insert(WorkoutLabel(label = "Running", color = Color.Red.toArgb(), workoutType = WorkoutType.CARDIO))
+
+
+            for (i in 0 until 24){
+                workoutDao.insert(DailyHR(hour = i, value = 0))
+            }
         }
     }
 }

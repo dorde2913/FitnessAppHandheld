@@ -10,3 +10,4 @@ data class HRList(
     val value: Int = 0,
     val timeStamp: Long = 0L
 )
+

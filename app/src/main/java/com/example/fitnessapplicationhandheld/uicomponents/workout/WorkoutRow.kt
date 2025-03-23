@@ -1,15 +1,15 @@
-package com.example.fitnessapplicationhandheld.uicomponents
+package com.example.fitnessapplicationhandheld.uicomponents.workout
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -28,19 +28,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fitnessapplicationhandheld.R
-import com.example.fitnessapplicationhandheld.database.models.HRList
 import com.example.fitnessapplicationhandheld.database.models.Workout
 import com.example.fitnessapplicationhandheld.database.models.WorkoutType
-import kotlinx.coroutines.flow.map
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun WorkoutRow(modifier: Modifier = Modifier, workout: Workout, cardColors: CardColors,
-               averageBPM: Int){
+               averageBPM: Int, onWorkoutClick: (Long)->Unit){
 
     val dateTime = LocalDateTime.ofInstant(
         Instant.ofEpochSecond(workout.timestamp),
@@ -54,9 +53,15 @@ fun WorkoutRow(modifier: Modifier = Modifier, workout: Workout, cardColors: Card
 
     val length = LocalTime.ofNanoOfDay(workout.length * 1_000_000).format(formatter)
 
+    val speed = if (workout.length != 0L) workout.distance / ((workout.length.toDouble()  / 1000))
+                else 0f
+
 
     Row(
         modifier = modifier.fillMaxWidth()
+            .clickable{
+                onWorkoutClick(workout.timestamp)
+            }
     ){
 
         Column(
@@ -64,20 +69,14 @@ fun WorkoutRow(modifier: Modifier = Modifier, workout: Workout, cardColors: Card
         ){
             Text(text = workout.label, fontSize = 15.sp, textAlign = TextAlign.Center,
                 modifier = Modifier.widthIn(max = 70.dp).basicMarquee(
+                    iterations = 77,
                     repeatDelayMillis = 5000
                 ))
-            Box(
-                modifier = Modifier.clip(CircleShape).size(70.dp).background(Color.Transparent)
-                    .border(border = BorderStroke(3.dp,Color(workout.color)), shape = CircleShape),
-                contentAlignment = Alignment.Center
-            ){
-                Icon(
-                    painter = painterResource(getWorkoutIcon(workout.workoutType)),
-                    contentDescription = null,
-                    tint = cardColors.contentColor,
-                    modifier = Modifier.size(getIconSize(workout.workoutType).dp)
-                )
-            }
+            WorkoutIcon(
+                boxSize = 70,
+                workout = workout,
+                iconTint = cardColors.contentColor
+            )
         }
 
 
@@ -111,7 +110,7 @@ fun WorkoutRow(modifier: Modifier = Modifier, workout: Workout, cardColors: Card
             ){
 
 
-                Row(horizontalArrangement = Arrangement.Center,
+                Row(horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically){
                     Icon(painter = painterResource(R.drawable.caloriesicon_removebg_preview),
                         contentDescription = null,
@@ -119,7 +118,7 @@ fun WorkoutRow(modifier: Modifier = Modifier, workout: Workout, cardColors: Card
                         modifier = Modifier.size(35.dp))
                     Text("${workout.calories}kcal")
                 }
-                Row(horizontalArrangement = Arrangement.Center,
+                Row(horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically){
                     Icon(painter = painterResource(R.drawable.heartrateicon_removebg_preview),
                         contentDescription = null,
@@ -137,7 +136,7 @@ fun WorkoutRow(modifier: Modifier = Modifier, workout: Workout, cardColors: Card
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ){
 
-                    Row(horizontalArrangement = Arrangement.Center,
+                    Row(horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically){
                         Icon(painter = painterResource(R.drawable.distanceicon_removebg_preview),
                             contentDescription = null,
@@ -145,19 +144,20 @@ fun WorkoutRow(modifier: Modifier = Modifier, workout: Workout, cardColors: Card
                             modifier = Modifier.size(25.dp))
                         Text(formatDistance(workout.distance))
                     }
-                    Row(horizontalArrangement = Arrangement.Center,
+                    Row(horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically){
                         Icon(painter = painterResource(R.drawable.speedicon_removebg_preview),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.size(35.dp))
-                        Text("${workout.averageSpeed}m/s")
+                        Text("${String.format("%.2f",speed)}m/s")
                     }
                 }
             }
         }
     }
 }
+
 
 @SuppressLint("DefaultLocale")
 fun formatDuration(seconds: Long): String {

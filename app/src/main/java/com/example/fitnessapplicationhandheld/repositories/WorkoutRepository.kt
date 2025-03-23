@@ -2,14 +2,21 @@ package com.example.fitnessapplicationhandheld.repositories
 
 import android.content.Context
 import androidx.compose.runtime.collectAsState
+import androidx.datastore.preferences.core.edit
+import androidx.room.Query
+import com.example.fitnessapplicationhandheld.CALS_KEY
+import com.example.fitnessapplicationhandheld.STEPS_KEY
 import com.example.fitnessapplicationhandheld.dataStore
 import com.example.fitnessapplicationhandheld.database.Dao
 import com.example.fitnessapplicationhandheld.database.models.HRList
+import com.example.fitnessapplicationhandheld.database.models.Location
 import com.example.fitnessapplicationhandheld.database.models.Workout
+import com.example.fitnessapplicationhandheld.database.models.WorkoutType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -25,10 +32,14 @@ class WorkoutRepository @Inject constructor(
 ) {
 
     val workouts = dao.getWorkouts()
-
+    val labels = dao.getLabels()
+    val dailyHR = dao.getDailyHR()
 
     fun getAverageBPM(parentId: Long) =
         dao.getAverageBPM(parentId)
+
+    fun getRoute(id: Long) =
+        dao.getRoute(id)
 
     fun getWorkoutsByLabel(label: String) =
         dao.getWorkoutsByLabel(label)
@@ -37,13 +48,24 @@ class WorkoutRepository @Inject constructor(
         dao.insert(workout)
 
 
+    fun insertLocationList(locationList: List<Pair<Double,Double>>, parentId: Long, timeStamp: Long) =
+        CoroutineScope(Dispatchers.IO).launch {
+            for (value in locationList){
+                dao.insert(Location(parentID = parentId, latitude = value.first, longitude = value.second,
+                    timeStamp = timeStamp))
+            }
+        }
+
+    fun getCardioWorkouts() =
+        dao.getWorkoutsByType(WorkoutType.CARDIO)
+
     fun getHRList(parentId: Long) =
         dao.getHRList(parentId)
 
-    fun insertHRList(hrList: List<Int>, parentId: Long) =
+    fun insertHRList(hrList: List<Int>, parentId: Long, timeStamp: Long) =
         CoroutineScope(Dispatchers.IO).launch {
             for (value in hrList){
-                dao.insert(HRList(parentID = parentId, value = value))
+                dao.insert(HRList(parentID = parentId, value = value, timeStamp = timeStamp))
             }
         }
 
@@ -56,6 +78,30 @@ class WorkoutRepository @Inject constructor(
     suspend fun updateDistance(workoutID: Long, distance: Int) =
         dao.updateDistance(id = workoutID, value = distance)
 
+    suspend fun updateSpeed(workoutID: Long,distance: Int,length: Long) {
+        var speed = 0.0
+        println(length)
+
+        dao.updateSpeed(workoutID,speed)
+    }
+
+    suspend fun updateDailySteps(steps: Int){
+        context.dataStore.edit { preferences->
+            preferences[STEPS_KEY] = steps
+        }
+    }
+
+    suspend fun updateDailyCalories(calories: Int){
+        context.dataStore.edit { preferences->
+            preferences[CALS_KEY] = calories
+        }
+    }
+
+    suspend fun updateDailyHR(hour: Int, value: Int) =
+        dao.updateDailyHR(hour = hour, value = value)
+
+    fun getWorkout(id: Long) =
+        dao.getWorkoutFlow(id)
 
     suspend fun getWorkout(id: Long, label: String): Workout?{
         //get/create workout
@@ -83,5 +129,42 @@ class WorkoutRepository @Inject constructor(
     }
 
 
+    fun getAverageLengthByLabel(label: String) =
+        dao.getAverageLengthByLabel(label)
 
+    fun getAverageLengthByType(type: WorkoutType) =
+        dao.getAverageLengthByType(type)
+
+    fun getAverageCaloriesByLabel(label: String) =
+        dao.getAverageCaloriesByLabel(label)
+
+    fun getAverageCaloriesByType(type: WorkoutType) =
+        dao.getAverageCaloriesByType(type)
+
+    fun getAverageBPMByType(type: WorkoutType) =
+        dao.getAverageBPMByType(type)
+
+    fun getAverageBPMByLabel(label: String) =
+        dao.getAverageBPMByLabel(label)
+
+    fun getLabelsByType(workoutType: WorkoutType) =
+        dao.getLabelsByType(workoutType)
+
+
+
+    //cardio specific
+    fun getAverageDistance()=
+        dao.getAverageDistance(type = WorkoutType.CARDIO)
+
+
+    fun getAverageDistanceByLabel(label: String) =
+        dao.getAverageDistanceByLabel(type = WorkoutType.CARDIO,label = label)
+
+
+    fun getAverageSpeed() =
+        dao.getAverageSpeed(type = WorkoutType.CARDIO)
+
+
+    fun getAverageSpeedByLabel( label: String) =
+        dao.getAverageSpeedByLabel(type = WorkoutType.CARDIO,label = label)
 }

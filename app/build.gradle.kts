@@ -10,8 +10,18 @@ plugins {
     kotlin("kapt")
     kotlin("plugin.serialization") version "1.9.22"
     alias(libs.plugins.kotlin.parcelize)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
+secrets {
+    // Optionally specify a different file name containing your secrets.
+    // The plugin defaults to "local.properties"
+    propertiesFileName = "secrets.properties"
+
+    // A properties file containing default secret values. This file can be
+    // checked in version control.
+    defaultPropertiesFileName = "local.defaults.properties"
+}
 android {
     namespace = "com.example.fitnessapplicationhandheld"
     compileSdk = 35
@@ -101,6 +111,14 @@ dependencies {
     implementation(libs.vico.compose.m3)
 
     implementation(libs.datastore.preferences)
+
+
+
+    implementation(libs.maps.compose)
+    // Google Maps Compose utility library
+    implementation(libs.maps.compose.utils)
+    // Google Maps Compose widgets library
+    implementation(libs.maps.compose.widgets)
 
 
 }

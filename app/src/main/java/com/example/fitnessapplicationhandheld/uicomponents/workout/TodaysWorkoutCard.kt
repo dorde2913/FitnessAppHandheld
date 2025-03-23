@@ -1,26 +1,18 @@
-package com.example.fitnessapplicationhandheld.uicomponents
+package com.example.fitnessapplicationhandheld.uicomponents.workout
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -41,14 +33,8 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun TodaysWorkoutCard(modifier: Modifier = Modifier, cardColors: CardColors,
-                      viewModel: WorkoutViewModel){
-    val dummyWorkouts = listOf(
-        Workout(Instant.now().epochSecond, WorkoutType.GYM, label = "Push day", color = Color.Blue.toArgb()),
-        Workout(Instant.now().epochSecond, WorkoutType.CARDIO, label = "running", color = Color.Cyan.toArgb()),
-        Workout(Instant.now().epochSecond, WorkoutType.CARDIO, label = "running", color = Color.Cyan.toArgb()),
-        Workout(Instant.now().epochSecond, WorkoutType.CARDIO, label = "running", color = Color.Cyan.toArgb()),
-        Workout(Instant.now().epochSecond, WorkoutType.CARDIO, label = "running", color = Color.Cyan.toArgb())
-    )
+                      viewModel: WorkoutViewModel, onWorkoutClick: (Long)->Unit){
+
 
     val workouts by viewModel.workouts.collectAsState(initial = listOf())
     val dateFormatter = DateTimeFormatter.ofPattern("MM.dd.yyyy")
@@ -94,17 +80,15 @@ fun TodaysWorkoutCard(modifier: Modifier = Modifier, cardColors: CardColors,
 
 
                         WorkoutRow(workout = workout, modifier = Modifier.padding(5.dp), cardColors = cardColors,
-                            averageBPM = averageBPM)
+                            averageBPM = averageBPM, onWorkoutClick = onWorkoutClick)
 
-                        if (index != workouts.size -1)
+                        if (index != todaysWorkouts.size -1)
                             HorizontalDivider(color = cardColors.contentColor)
 
                     }
 
                 }
             }
-
-
 
         }
     }

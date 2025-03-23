@@ -40,9 +40,14 @@
                 <data android:pathPrefix="/speed"/>
                 <data android:pathPrefix="/steps_daily"/>
                 <data android:pathPrefix="/calories_daily"/>
+                <data android:pathPrefix="/daily_heartrate"/>
 
             </intent-filter>
         </service>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
 
     </application>
 
