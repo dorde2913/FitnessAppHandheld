@@ -2,6 +2,7 @@ package com.example.fitnessapplicationhandheld.uicomponents
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.work.workDataOf
@@ -49,21 +51,28 @@ fun CardioStatsCard(
     speedComparison: String
 ){
 
-    if (locationList.isNotEmpty()){
-        val route = locationList.map{coords-> LatLng(coords.latitude,coords.longitude) }
 
-        val polylineOptions = PolylineOptions()
-            .addAll(route)
-            .width(5f)
-            .color(Color.Red.toArgb())
+    val route = locationList.map{coords-> LatLng(coords.latitude,coords.longitude) }
 
-        val cameraPositionState = rememberCameraPositionState()
+    val polylineOptions = PolylineOptions()
+        .addAll(route)
+        .width(5f)
+        .color(Color.Red.toArgb())
 
-        var isMapLoaded by rememberSaveable { mutableStateOf(false) }
-        Card(
-            modifier = Modifier.padding(horizontal = 10.dp),
-            colors = cardColors
-        ){
+    val cameraPositionState = rememberCameraPositionState()
+
+    var isMapLoaded by rememberSaveable { mutableStateOf(false) }
+    Card(
+        modifier = Modifier.padding(horizontal = 10.dp)
+            .fillMaxWidth().heightIn(min = 100.dp),
+        colors = cardColors
+    ){
+        if (locationList.isEmpty())
+        {
+            Spacer(modifier = Modifier.height(40.dp))
+            Text("No data :(", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+        }
+        else
             Column(
                 modifier = Modifier.fillMaxWidth()
             ){
@@ -121,8 +130,8 @@ fun CardioStatsCard(
 
 
 
-        }
     }
+
 
 
 

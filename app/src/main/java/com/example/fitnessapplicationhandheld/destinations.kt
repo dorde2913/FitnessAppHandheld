@@ -57,11 +57,18 @@ object DestinationWorkoutLabels : Destination {
     override val topBarText = "My Workouts"
 }
 
+object DestinationNewWorkoutLabel : Destination {
+    override val customIcon = R.drawable.listicon
+    override val icon = null
+    override val route = "new_workout"
+    override val topBarText = "New Workout"
+}
+
 val bottomNavigationDestinations = listOf(
+    DestinationToday,
     DestinationHistory,
     DestinationWorkoutLabels,
-    DestinationToday,
-    DestinationFitnessGoals,
+    //DestinationFitnessGoals,
     DestinationStats,
 )
 
@@ -71,4 +78,5 @@ val Destinations = mapOf(Pair(DestinationHistory.route , DestinationHistory),
     Pair(DestinationStats.route , DestinationStats),
     Pair(DestinationWorkoutDetails.route,DestinationWorkoutDetails),
     Pair(DestinationWorkoutLabels.route , DestinationWorkoutLabels),
-    Pair(DestinationFitnessGoals.route , DestinationFitnessGoals))
+    Pair(DestinationFitnessGoals.route , DestinationFitnessGoals),
+    Pair(DestinationNewWorkoutLabel.route , DestinationNewWorkoutLabel))

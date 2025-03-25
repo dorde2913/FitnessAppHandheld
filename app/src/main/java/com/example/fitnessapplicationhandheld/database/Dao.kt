@@ -1,6 +1,7 @@
 package com.example.fitnessapplicationhandheld.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -79,6 +80,11 @@ interface Dao{
     fun getRoute(id: Long): Flow<List<Location>>
 
 
+    @Query("DELETE FROM workout WHERE label = :label")
+    suspend fun deleteWorkoutByLabel(label: String)
+
+    @Query("DELETE FROM workoutLabel WHERE label = :label")
+    suspend fun delete(label: String)
 
     /*
     averages
@@ -123,5 +129,8 @@ interface Dao{
 
     @Query("SELECT AVG(averageSpeed) FROM workout WHERE workoutType = :type and label = :label")
     fun getAverageSpeedByLabel(type: WorkoutType, label: String): Flow<Double>
+
+    @Query("SELECT COUNT(*) FROM workout WHERE label = :label")
+    fun getNumberOfWorkoutsByLabel(label: String): Flow<Int>
 
 }

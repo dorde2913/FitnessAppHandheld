@@ -2,9 +2,12 @@ package com.example.fitnessapplicationhandheld.stateholders
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.fitnessapplicationhandheld.database.models.WorkoutLabel
 import com.example.fitnessapplicationhandheld.database.models.WorkoutType
 import com.example.fitnessapplicationhandheld.repositories.WorkoutRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,6 +19,18 @@ class WorkoutViewModel @Inject constructor(
     val workouts = repository.workouts
     val labels = repository.labels
 
+
+    var deletionList: MutableList<String> = mutableListOf()
+
+    fun deleteSelectedLabels(){
+        viewModelScope.launch {
+            for (label in deletionList){
+                repository.deleteWorkoutByLabel(label)
+                repository.deleteLabel(label)
+            }
+        }
+        deletionList = mutableListOf()
+    }
 
     val dailyHR = repository.dailyHR
 
@@ -71,4 +86,9 @@ class WorkoutViewModel @Inject constructor(
     fun getAverageSpeedByLabel( label: String) =
         repository.getAverageSpeedByLabel(label = label)
 
+    fun getNumberOfWorkoutsByLabel(label: String) =
+        repository.getNumberOfWorkoutsByLabel(label)
+
+    suspend fun insertWorkoutLabel(workoutLabel: WorkoutLabel) =
+        repository.insertWorkoutLabel(workoutLabel)
 }

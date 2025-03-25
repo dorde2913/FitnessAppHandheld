@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +41,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.fitnessapplicationhandheld.screens.FitnessGoalsScreen
 import com.example.fitnessapplicationhandheld.screens.HistoryScreen
+import com.example.fitnessapplicationhandheld.screens.NewWorkoutScreen
 import com.example.fitnessapplicationhandheld.screens.StatScreen
 import com.example.fitnessapplicationhandheld.screens.TodaysActivityScreen
 import com.example.fitnessapplicationhandheld.screens.WorkoutDetailsScreen
@@ -71,7 +74,8 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             println(currentRoute)
-            if (currentRoute.startsWith(DestinationWorkoutDetails.route)) return@Scaffold
+            if (currentRoute.startsWith(DestinationWorkoutDetails.route) ||
+                currentRoute == DestinationNewWorkoutLabel.route) return@Scaffold
             NavigationBar{
                 bottomNavigationDestinations.forEach { navDestination ->
                     NavigationBarItem(
@@ -119,7 +123,8 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
                         val segments = currentRoute.split("/")
                         println(segments[0])
 
-                        if (segments[0] == DestinationWorkoutDetails.route)
+                        if (segments[0] == DestinationWorkoutDetails.route ||
+                            segments[0] == DestinationNewWorkoutLabel.route)
                             Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                                 contentDescription = null,
                                 modifier = Modifier.size(40.dp)
@@ -140,7 +145,18 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
             }
         },
         floatingActionButton = {
-            //tba
+            if (currentRoute != DestinationWorkoutLabels.route) return@Scaffold
+
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate(DestinationNewWorkoutLabel.route)
+                },
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.tertiary
+            ) {
+                Icon(Icons.Filled.Add,null)
+            }
+
         }
     ) { innerPadding ->
         NavHost(
@@ -176,16 +192,20 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
             composable(
                 route = DestinationWorkoutLabels.route
             ) {
-                WorkoutLabelsScreen()
+                WorkoutLabelsScreen(viewModel = viewModel, cardColors = cardColors)
             }
 
             composable(
                 route = DestinationFitnessGoals.route
             ) {
-                FitnessGoalsScreen()
+                FitnessGoalsScreen(cardColors = cardColors)
             }
 
-
+            composable(
+                route = DestinationNewWorkoutLabel.route
+            ) {
+                NewWorkoutScreen(viewModel = viewModel, cardColors = cardColors, navigateBack = {navController.popBackStack()})
+            }
 
         }
     }

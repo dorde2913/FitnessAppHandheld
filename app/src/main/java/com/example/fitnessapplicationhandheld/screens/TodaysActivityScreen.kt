@@ -24,11 +24,6 @@ fun TodaysActivityScreen(modifier: Modifier = Modifier, cardColors: CardColors,
     Ovde su neke temp vrednosti za testiranje UI, posle ce to sve da se uzima iz baze vrv
      */
 
-    val todaysSteps = 587
-    val stepsGoal = 3000
-
-    val todaysCals = 700
-    val calsGoal = 2000
 
 
     Column(
@@ -39,8 +34,6 @@ fun TodaysActivityScreen(modifier: Modifier = Modifier, cardColors: CardColors,
 
         StepsCard(
             modifier = Modifier.padding(10.dp),
-            stepsGoal = stepsGoal,
-            goalCals = calsGoal,
             cardColors = cardColors,
             viewModel = viewModel
         )

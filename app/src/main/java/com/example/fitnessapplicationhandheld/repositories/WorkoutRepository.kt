@@ -11,6 +11,7 @@ import com.example.fitnessapplicationhandheld.database.Dao
 import com.example.fitnessapplicationhandheld.database.models.HRList
 import com.example.fitnessapplicationhandheld.database.models.Location
 import com.example.fitnessapplicationhandheld.database.models.Workout
+import com.example.fitnessapplicationhandheld.database.models.WorkoutLabel
 import com.example.fitnessapplicationhandheld.database.models.WorkoutType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -37,6 +38,12 @@ class WorkoutRepository @Inject constructor(
 
     fun getAverageBPM(parentId: Long) =
         dao.getAverageBPM(parentId)
+
+    suspend fun deleteWorkoutByLabel(label: String) =
+        dao.deleteWorkoutByLabel(label)
+
+    suspend fun deleteLabel(label: String) =
+        dao.delete(label)
 
     fun getRoute(id: Long) =
         dao.getRoute(id)
@@ -81,6 +88,8 @@ class WorkoutRepository @Inject constructor(
     suspend fun updateSpeed(workoutID: Long,distance: Int,length: Long) {
         var speed = 0.0
         println(length)
+        if (distance != 0 && length != 0L)
+            speed = distance / (length * 1_000_000_000).toDouble()
 
         dao.updateSpeed(workoutID,speed)
     }
@@ -167,4 +176,10 @@ class WorkoutRepository @Inject constructor(
 
     fun getAverageSpeedByLabel( label: String) =
         dao.getAverageSpeedByLabel(type = WorkoutType.CARDIO,label = label)
+
+    fun getNumberOfWorkoutsByLabel(label: String) =
+        dao.getNumberOfWorkoutsByLabel(label)
+
+    suspend fun insertWorkoutLabel(workoutLabel: WorkoutLabel) =
+        dao.insert(workoutLabel)
 }
