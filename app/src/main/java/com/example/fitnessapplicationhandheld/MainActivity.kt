@@ -60,6 +60,9 @@ class MainActivity : ComponentActivity() {
         )
 
 
+        val path = this.intent.data?.path
+
+        println(path)
 
         enableEdgeToEdge()
         setContent {
@@ -77,7 +80,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val viewModel: WorkoutViewModel = viewModel()
-                FitnessHandheldApp(viewModel = viewModel)
+                FitnessHandheldApp(viewModel = viewModel, path = path)
             }
         }
     }

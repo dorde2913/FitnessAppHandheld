@@ -195,7 +195,7 @@ fun NewWorkoutScreen(modifier: Modifier = Modifier,
             isError = isError,
             supportingText = {if (isError)Text(text = "Workout names should be unique!")}
         )
-        val snackbarHostState = remember { SnackbarHostState() }
+
 
         Spacer(modifier = Modifier.height(50.dp))
 

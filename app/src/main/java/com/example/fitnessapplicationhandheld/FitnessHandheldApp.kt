@@ -50,12 +50,13 @@ import com.example.fitnessapplicationhandheld.stateholders.WorkoutViewModel
 
 @Composable
 fun FitnessHandheldApp(modifier: Modifier = Modifier,
-                       viewModel: WorkoutViewModel) {
+                       viewModel: WorkoutViewModel, path: String?) {
     val navController = rememberNavController()
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
     val currentRoute = currentDestination?.route ?: DestinationToday.route
+
 
 
     val cardColors = CardColors(
@@ -161,7 +162,9 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = DestinationToday.route,
+            startDestination = if (path == null) DestinationToday.route
+                                else if (path == "/daily") DestinationToday.route
+                                else DestinationStats.route,
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(route = DestinationHistory.route) {

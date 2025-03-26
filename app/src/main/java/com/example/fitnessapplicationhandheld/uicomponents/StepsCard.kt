@@ -111,7 +111,8 @@ fun StepsCard(modifier: Modifier = Modifier,
                 icon = R.drawable.stepsicon,
                 currentValue = dailySteps?:0,
                 goalValue = stepsGoal?:0,
-                cardColors = cardColors
+                cardColors = cardColors,
+                viewModel = viewModel
             )
 
             CircularIndicatorColumn(
@@ -119,7 +120,8 @@ fun StepsCard(modifier: Modifier = Modifier,
                 icon = R.drawable.caloriesicon_removebg_preview,
                 currentValue = dailyCals?:0,
                 goalValue = goalCals?:0,
-                cardColors = cardColors
+                cardColors = cardColors,
+                viewModel = viewModel
             )
 
 
@@ -136,6 +138,7 @@ fun CircularIndicatorColumn(
     currentValue: Int,
     goalValue: Int,
     cardColors: CardColors,
+    viewModel: WorkoutViewModel
     ){
 
     val context = LocalContext.current
@@ -147,7 +150,7 @@ fun CircularIndicatorColumn(
             durationMillis = 1000
         )
     )
-    LaunchedEffect(currentValue) {
+    LaunchedEffect(currentValue,goalValue) {
         if (goalValue == 0) progress = 0f
         else progress = currentValue/goalValue.toFloat()
     }
@@ -187,11 +190,14 @@ fun CircularIndicatorColumn(
                         Button(onClick = {
                                 CoroutineScope(Dispatchers.IO).launch {
                                     context.dataStore.edit { preferences->
-                                       if (label == "Steps Walked")
-                                            preferences[STEPS_GOAL_KEY] = textFieldValue.toInt()
-                                        else
+                                       if (label == "Steps Walked"){
+                                           preferences[STEPS_GOAL_KEY] = textFieldValue.toInt()
+                                           viewModel.sendStepsGoal(textFieldValue.toInt())
+                                       }
+                                       else{
                                            preferences[CALS_GOAL_KEY] = textFieldValue.toInt()
-
+                                           viewModel.sendCalsGoal(textFieldValue.toInt())
+                                       }
                                     }
                                     showDialog = false
                                 }

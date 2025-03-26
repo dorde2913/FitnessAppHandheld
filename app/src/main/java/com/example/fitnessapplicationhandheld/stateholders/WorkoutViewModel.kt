@@ -1,21 +1,31 @@
 package com.example.fitnessapplicationhandheld.stateholders
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessapplicationhandheld.database.models.WorkoutLabel
 import com.example.fitnessapplicationhandheld.database.models.WorkoutType
 import com.example.fitnessapplicationhandheld.repositories.WorkoutRepository
+import com.google.android.gms.wearable.PutDataMapRequest
+import com.google.android.gms.wearable.Wearable
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.time.Instant
 import javax.inject.Inject
 
 @HiltViewModel
 class WorkoutViewModel @Inject constructor(
+    @ApplicationContext context: Context,
     private val savedStateHandle: SavedStateHandle,
     private val repository: WorkoutRepository
 ): ViewModel() {
 
+    private val dataClient by lazy { Wearable.getDataClient(context)}
     val workouts = repository.workouts
     val labels = repository.labels
 
@@ -25,7 +35,7 @@ class WorkoutViewModel @Inject constructor(
     fun deleteSelectedLabels(){
         viewModelScope.launch {
             for (label in deletionList){
-                repository.deleteWorkoutByLabel(label)
+                //repository.deleteWorkoutByLabel(label)
                 repository.deleteLabel(label)
             }
         }
@@ -42,6 +52,34 @@ class WorkoutViewModel @Inject constructor(
 
     fun getCardioWorkouts() =
         repository.getCardioWorkouts()
+
+    fun sendCalsGoal(cals: Int){
+        val dataMapRequest = PutDataMapRequest.create("/cals_goal").apply{
+            dataMap.putInt("cals_goal", cals)
+        }
+        val putDataRequest = dataMapRequest.asPutDataRequest().setUrgent()
+        dataClient.putDataItem(putDataRequest)
+            .addOnSuccessListener { dataItem->
+                Log.d("DataClient", "DataItem saved: $dataItem")
+            }
+            .addOnFailureListener { exception->
+                Log.d("DataClient","Failed to send: $exception")
+            }
+    }
+
+    fun sendStepsGoal(steps: Int){
+        val dataMapRequest = PutDataMapRequest.create("/steps_goal").apply{
+            dataMap.putInt("steps_goal", steps)
+        }
+        val putDataRequest = dataMapRequest.asPutDataRequest().setUrgent()
+        dataClient.putDataItem(putDataRequest)
+            .addOnSuccessListener { dataItem->
+                Log.d("DataClient", "DataItem saved: $dataItem")
+            }
+            .addOnFailureListener { exception->
+                Log.d("DataClient","Failed to send: $exception")
+            }
+    }
 
     fun getRoute(id: Long) =
         repository.getRoute(id)

@@ -20,9 +20,22 @@
             android:theme="@style/Theme.FitnessApplicationHandheld">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="fitnessapphandheld"/>
+                <data android:host="open"/>
+                <data android:path="/daily"/>
+                <data android:path="/stats"/>
+            </intent-filter>
+
         </activity>
 
         <service android:name=".services.WearMessageListenerService"
@@ -48,6 +61,8 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
+
+
 
     </application>
 
