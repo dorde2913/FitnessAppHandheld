@@ -133,4 +133,13 @@ interface Dao{
     @Query("SELECT COUNT(*) FROM workout WHERE label = :label")
     fun getNumberOfWorkoutsByLabel(label: String): Flow<Int>
 
+
+    @Query("SELECT * FROM workout ORDER BY label")
+    fun getWorkoutsOrderedByLabel(): Flow<List<Workout>>
+
+    @Query("SELECT * FROM workoutLabel WHERE (SELECT COUNT(*) FROM workout WHERE label = workoutLabel.label)>0 ORDER BY label")
+    fun getLabelsOrdered(): Flow<List<WorkoutLabel>>
+    @Query("SELECT * FROM workoutLabel WHERE workoutType = :type AND (SELECT COUNT(*) FROM workout WHERE label = workoutLabel.label)>0 ORDER BY label")
+    fun getOrderedLabelsByType(type: WorkoutType): Flow<List<WorkoutLabel>>
+
 }

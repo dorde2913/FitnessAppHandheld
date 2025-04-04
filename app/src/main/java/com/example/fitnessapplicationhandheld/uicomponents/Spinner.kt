@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.example.fitnessapplicationhandheld.database.models.WorkoutType
 
 
 @Composable
@@ -92,6 +93,65 @@ fun Spinner(
                         },
                         onClick = {
                             onSelect(label)
+                            isExpanded = false
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun Spinner(
+    value: WorkoutType,
+    onSelect: (WorkoutType) -> Unit,
+    options: List<WorkoutType>,
+    modifier: Modifier = Modifier,
+    cardColors: CardColors
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+
+    Box(modifier = modifier.padding(horizontal = 16.dp),
+        contentAlignment = Alignment.TopEnd) {
+        Column(){
+            Row(
+                modifier = Modifier
+                    //.align(Alignment.Center)
+                    .wrapContentSize()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { isExpanded = !isExpanded },
+                horizontalArrangement = Arrangement.End
+            ) {
+                Text(text = value.toString(), color = cardColors.contentColor)
+                //Spacer(modifier = Modifier.weight(1f))
+                Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = null)
+            }
+
+            // https://m2.material.io/components/menus/android
+            // https://developer.android.com/reference/kotlin/androidx/compose/material/package-summary
+            //Spacer(modifier = Modifier.weight(1f))
+            DropdownMenu(
+                expanded = isExpanded,
+                onDismissRequest = { isExpanded = false },
+                offset = DpOffset(0.dp, (-32).dp),
+                modifier = Modifier.wrapContentSize(),
+            ) {
+                options.forEach { type ->
+                    DropdownMenuItem(
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start,
+                                modifier = Modifier.fillMaxWidth()
+                            ){
+                                Text(modifier = Modifier.padding(5.dp),text = type.toString())
+                            }
+                        },
+                        onClick = {
+                            onSelect(type)
                             isExpanded = false
                         },
                     )

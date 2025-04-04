@@ -62,6 +62,7 @@ fun CardioStatsCard(
     val cameraPositionState = rememberCameraPositionState()
 
     var isMapLoaded by rememberSaveable { mutableStateOf(false) }
+
     Card(
         modifier = Modifier.padding(horizontal = 10.dp)
             .fillMaxWidth().heightIn(min = 100.dp),

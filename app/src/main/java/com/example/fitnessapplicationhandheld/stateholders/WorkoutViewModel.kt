@@ -12,7 +12,9 @@ import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.time.Instant
@@ -29,6 +31,9 @@ class WorkoutViewModel @Inject constructor(
     val workouts = repository.workouts
     val labels = repository.labels
 
+    val workoutsOrderedByLabel = repository.workoutsOrderedByLabel
+    val labelsOrdered = repository.labelsOrdered
+
 
     var deletionList: MutableList<String> = mutableListOf()
 
@@ -40,7 +45,14 @@ class WorkoutViewModel @Inject constructor(
             }
         }
         deletionList = mutableListOf()
+        sendWorkoutLabels()
     }
+
+    fun getOrderedLabelsByType(type: WorkoutType) =
+        repository.getOrderedLabelsByType(type)
+
+    fun getWorkoutsByLabel(label: String) =
+        repository.getWorkoutsByLabel(label)
 
     val dailyHR = repository.dailyHR
 
@@ -52,6 +64,8 @@ class WorkoutViewModel @Inject constructor(
 
     fun getCardioWorkouts() =
         repository.getCardioWorkouts()
+    fun getWorkoutsByType(type: WorkoutType) =
+        repository.getWorkoutsByType(type)
 
     fun sendCalsGoal(cals: Int){
         val dataMapRequest = PutDataMapRequest.create("/cals_goal").apply{
@@ -79,6 +93,26 @@ class WorkoutViewModel @Inject constructor(
             .addOnFailureListener { exception->
                 Log.d("DataClient","Failed to send: $exception")
             }
+    }
+
+    private fun sendWorkoutLabels(){
+
+        viewModelScope.launch {
+            val buh = labels.collectLatest {
+                Log.d("test",it[0].label)
+                val dataMapRequest = PutDataMapRequest.create("/workout_labels").apply{
+                    dataMap.putByteArray("workout_labels", Json.encodeToString(LabelList(list = it)).toByteArray())
+                }
+                val putDataRequest = dataMapRequest.asPutDataRequest().setUrgent()
+                dataClient.putDataItem(putDataRequest)
+                    .addOnSuccessListener { dataItem->
+                        Log.d("DataClient", "DataItem saved: $dataItem")
+                    }
+                    .addOnFailureListener { exception->
+                        Log.d("DataClient","Failed to send: $exception")
+                    }
+            }
+        }
     }
 
     fun getRoute(id: Long) =
@@ -127,6 +161,14 @@ class WorkoutViewModel @Inject constructor(
     fun getNumberOfWorkoutsByLabel(label: String) =
         repository.getNumberOfWorkoutsByLabel(label)
 
-    suspend fun insertWorkoutLabel(workoutLabel: WorkoutLabel) =
+    suspend fun insertWorkoutLabel(workoutLabel: WorkoutLabel) {
         repository.insertWorkoutLabel(workoutLabel)
+        sendWorkoutLabels()
+    }
+
 }
+
+@Serializable
+data class LabelList(
+    val list : List<WorkoutLabel> = listOf()
+)

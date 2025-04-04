@@ -46,6 +46,7 @@ import com.example.fitnessapplicationhandheld.stateholders.WorkoutViewModel
 import com.example.fitnessapplicationhandheld.uicomponents.BPMGraphCard
 import com.example.fitnessapplicationhandheld.uicomponents.CardioStatsCard
 import com.example.fitnessapplicationhandheld.uicomponents.Spinner
+import com.example.fitnessapplicationhandheld.uicomponents.darken
 import com.example.fitnessapplicationhandheld.uicomponents.workout.WorkoutIcon
 import com.example.fitnessapplicationhandheld.uicomponents.workout.formatDistance
 import com.example.fitnessapplicationhandheld.uicomponents.workout.getIconSize
@@ -220,12 +221,14 @@ fun WorkoutDetailsScreen(modifier: Modifier = Modifier, id: Long, cardColors: Ca
                     textAlign = TextAlign.Left,
                     fontSize = 15.sp,
                 )
+                val speed = if (workout.length != 0L) workout.distance / ((workout.length.toDouble()  / 1000))
+                     else 0f
 
                 //Spacer(modifier = Modifier.height(40.dp))
                 CardioStatsCard(
                     locationList = locationList,
                     cardColors = cardColors,
-                    averageSpeed = "${ String.format("%.2f",workout.averageSpeed) }m/s",
+                    averageSpeed = "${String.format("%.2f",speed)}m/s", //"${ String.format("%.2f",workout.averageSpeed) }m/s",
                     distance = formatDistance(workout.distance),
                     distanceComparison = getComparison(workout.distance.toDouble(),comparisonDistance),
                     speedComparison = getComparison(workout.averageSpeed,comparisonSpeed)
@@ -279,5 +282,43 @@ fun BasicStatRow(icon: Int, iconSize: Int, label: String, value: String,
     }
 }
 
+@Composable
+fun BasicStatRow(icon: Int, iconSize: Int, label: String, value: String,
+                 cardColors: CardColors){
+    Row(
+        modifier = Modifier.fillMaxWidth().height(60.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceAround
+    ){
 
+        Box(
+            modifier = Modifier.width(50.dp),
+            contentAlignment = Alignment.Center
+        ){
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = null,
+                tint = cardColors.contentColor,
+                modifier = Modifier.size(iconSize.dp)
+            )
+        }
+
+        Column(
+            //verticalArrangement = Arrangement.SpaceBetween
+        ){
+            Text(modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                text = label,
+                fontSize = 12.sp,
+                color = cardColors.contentColor.darken(0.4f))
+            Text(modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                text = value,
+                fontSize = 20.sp)
+        }
+
+    }
+
+
+}
 

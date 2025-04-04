@@ -118,9 +118,9 @@ fun BPMGraphCard(
                     ),
 
                     ),
-//            zoomState = rememberVicoZoomState(
-//               // initialZoom = Zoom.x(bpmList.size.toDouble())
-//            ),
+            zoomState = rememberVicoZoomState(
+                initialZoom = Zoom.x(bpmList.size.toDouble())
+            ),
                 modelProducer = modelProducer,
                 modifier = Modifier.padding(horizontal = 10.dp).fillMaxWidth(),
             )

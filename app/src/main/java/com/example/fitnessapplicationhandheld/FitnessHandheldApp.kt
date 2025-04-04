@@ -171,7 +171,7 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
                 HistoryScreen(viewModel = viewModel, cardColors = cardColors, onWorkoutClick = navigateToWorkoutDetails)
             }
             composable(route = DestinationStats.route) {
-                StatScreen(viewModel = viewModel)
+                StatScreen(viewModel = viewModel, cardColors = cardColors)
             }
 
             composable(

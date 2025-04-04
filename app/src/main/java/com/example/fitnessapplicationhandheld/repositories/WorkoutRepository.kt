@@ -36,8 +36,14 @@ class WorkoutRepository @Inject constructor(
     val labels = dao.getLabels()
     val dailyHR = dao.getDailyHR()
 
+    val workoutsOrderedByLabel = dao.getWorkoutsOrderedByLabel()
+    val labelsOrdered = dao.getLabelsOrdered()
+
     fun getAverageBPM(parentId: Long) =
         dao.getAverageBPM(parentId)
+
+    fun getOrderedLabelsByType(type: WorkoutType) =
+        dao.getOrderedLabelsByType(type)
 
     suspend fun deleteWorkoutByLabel(label: String) =
         dao.deleteWorkoutByLabel(label)
@@ -65,6 +71,11 @@ class WorkoutRepository @Inject constructor(
 
     fun getCardioWorkouts() =
         dao.getWorkoutsByType(WorkoutType.CARDIO)
+
+    fun getWorkoutsByType(type: WorkoutType) =
+        dao.getWorkoutsByType(type)
+
+
 
     fun getHRList(parentId: Long) =
         dao.getHRList(parentId)
