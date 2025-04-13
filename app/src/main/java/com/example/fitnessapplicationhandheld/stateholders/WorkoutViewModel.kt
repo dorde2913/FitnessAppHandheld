@@ -31,11 +31,10 @@ class WorkoutViewModel @Inject constructor(
     val workouts = repository.workouts
     val labels = repository.labels
 
-    val workoutsOrderedByLabel = repository.workoutsOrderedByLabel
-    val labelsOrdered = repository.labelsOrdered
 
+    var deletionList: MutableList<String> = mutableListOf()//labels
 
-    var deletionList: MutableList<String> = mutableListOf()
+    var workoutDeletionList: MutableList<Long> = mutableListOf()
 
     fun deleteSelectedLabels(){
         viewModelScope.launch {
@@ -47,6 +46,9 @@ class WorkoutViewModel @Inject constructor(
         deletionList = mutableListOf()
         sendWorkoutLabels()
     }
+
+    suspend fun deleteWorkout(id: Long) =
+        repository.deleteWorkout(id)
 
     fun getOrderedLabelsByType(type: WorkoutType) =
         repository.getOrderedLabelsByType(type)

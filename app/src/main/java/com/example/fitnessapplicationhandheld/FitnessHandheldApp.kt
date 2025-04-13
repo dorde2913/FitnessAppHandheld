@@ -24,9 +24,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -71,8 +75,18 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
         navController.navigate("${DestinationWorkoutDetails.route}/$id")
     }
 
+    val snackbarHostState = remember{ SnackbarHostState() }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState,
+            snackbar = {
+                Snackbar(
+                    snackbarData = it,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            ) },
         bottomBar = {
             println(currentRoute)
             if (currentRoute.startsWith(DestinationWorkoutDetails.route) ||
@@ -168,7 +182,8 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(route = DestinationHistory.route) {
-                HistoryScreen(viewModel = viewModel, cardColors = cardColors, onWorkoutClick = navigateToWorkoutDetails)
+                HistoryScreen(viewModel = viewModel, cardColors = cardColors,
+                    onWorkoutClick = navigateToWorkoutDetails, snackbarState = snackbarHostState)
             }
             composable(route = DestinationStats.route) {
                 StatScreen(viewModel = viewModel, cardColors = cardColors)
@@ -198,11 +213,11 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
                 WorkoutLabelsScreen(viewModel = viewModel, cardColors = cardColors)
             }
 
-            composable(
-                route = DestinationFitnessGoals.route
-            ) {
-                FitnessGoalsScreen(cardColors = cardColors)
-            }
+//            composable(
+//                route = DestinationFitnessGoals.route
+//            ) {
+//                FitnessGoalsScreen(cardColors = cardColors)
+//            }
 
             composable(
                 route = DestinationNewWorkoutLabel.route

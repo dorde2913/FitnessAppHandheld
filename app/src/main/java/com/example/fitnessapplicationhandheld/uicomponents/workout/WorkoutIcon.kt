@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessapplicationhandheld.database.models.Workout
 import com.example.fitnessapplicationhandheld.database.models.WorkoutLabel
 import com.example.fitnessapplicationhandheld.database.models.WorkoutType
+import com.example.fitnessapplicationhandheld.getWorkoutIcon
 import kotlin.math.roundToInt
 
 @Composable

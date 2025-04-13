@@ -1,6 +1,7 @@
 package com.example.fitnessapplicationhandheld.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,6 +42,8 @@ import androidx.compose.ui.unit.sp
 import com.example.fitnessapplicationhandheld.R
 import com.example.fitnessapplicationhandheld.database.models.Workout
 import com.example.fitnessapplicationhandheld.database.models.WorkoutType
+import com.example.fitnessapplicationhandheld.formatDistance
+import com.example.fitnessapplicationhandheld.formatLength
 import com.example.fitnessapplicationhandheld.getComparison
 import com.example.fitnessapplicationhandheld.stateholders.WorkoutViewModel
 import com.example.fitnessapplicationhandheld.uicomponents.BPMGraphCard
@@ -48,11 +51,8 @@ import com.example.fitnessapplicationhandheld.uicomponents.CardioStatsCard
 import com.example.fitnessapplicationhandheld.uicomponents.Spinner
 import com.example.fitnessapplicationhandheld.uicomponents.darken
 import com.example.fitnessapplicationhandheld.uicomponents.workout.WorkoutIcon
-import com.example.fitnessapplicationhandheld.uicomponents.workout.formatDistance
-import com.example.fitnessapplicationhandheld.uicomponents.workout.getIconSize
-import com.example.fitnessapplicationhandheld.uicomponents.workout.getWorkoutIcon
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
+
+
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -63,10 +63,7 @@ fun WorkoutDetailsScreen(modifier: Modifier = Modifier, id: Long, cardColors: Ca
 
     if (workout != Workout()) {
 
-        val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
-        val length = LocalTime.ofNanoOfDay(workout.length * 1_000_000).format(formatter)
-
-
+        val length = formatLength(workout.length)
         val hrList by viewModel.getHRList(workout.timestamp).collectAsState(initial = listOf())
 
         val averageBPM =
@@ -78,7 +75,7 @@ fun WorkoutDetailsScreen(modifier: Modifier = Modifier, id: Long, cardColors: Ca
         val labels by viewModel.getLabelsByType(workout.workoutType)
             .collectAsState(initial = listOf())
 
-        var all =
+        val all =
             if (workout.workoutType == WorkoutType.GYM) "All Gym Workouts"
             else "All Cardio Workouts"
 
@@ -214,6 +211,9 @@ fun WorkoutDetailsScreen(modifier: Modifier = Modifier, id: Long, cardColors: Ca
                     viewModel.getAverageSpeed().collectAsState(initial = 0.0)
                 else viewModel.getAverageSpeedByLabel(comparison).collectAsState(initial = 0.0)
 
+                //Log.d("Speed", comparisonSpeed.toString())
+
+
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     "Cardio specific stats", color = Color.White,
@@ -221,8 +221,10 @@ fun WorkoutDetailsScreen(modifier: Modifier = Modifier, id: Long, cardColors: Ca
                     textAlign = TextAlign.Left,
                     fontSize = 15.sp,
                 )
-                val speed = if (workout.length != 0L) workout.distance / ((workout.length.toDouble()  / 1000))
-                     else 0f
+                val speed = if (workout.length != 0L) workout.distance / (workout.length.toDouble() / 1000)
+                     else 0.0
+
+
 
                 //Spacer(modifier = Modifier.height(40.dp))
                 CardioStatsCard(
@@ -231,8 +233,11 @@ fun WorkoutDetailsScreen(modifier: Modifier = Modifier, id: Long, cardColors: Ca
                     averageSpeed = "${String.format("%.2f",speed)}m/s", //"${ String.format("%.2f",workout.averageSpeed) }m/s",
                     distance = formatDistance(workout.distance),
                     distanceComparison = getComparison(workout.distance.toDouble(),comparisonDistance),
-                    speedComparison = getComparison(workout.averageSpeed,comparisonSpeed)
+                    speedComparison = getComparison(speed,comparisonSpeed)
                 )
+
+                Log.d("Speed", speed.toString())
+                Log.d("comp speed", comparisonSpeed.toString())
             }
 
 

@@ -124,10 +124,10 @@ interface Dao{
     @Query("SELECT AVG(distance) FROM workout WHERE workoutType = :type and label = :label")
     fun getAverageDistanceByLabel(type: WorkoutType, label: String): Flow<Double>
 
-    @Query("SELECT AVG(averageSpeed) FROM workout WHERE workoutType = :type")
+    @Query("SELECT AVG(distance * 1000 / length) FROM workout WHERE workoutType = :type")
     fun getAverageSpeed(type: WorkoutType): Flow<Double> //average average speed, :)
 
-    @Query("SELECT AVG(averageSpeed) FROM workout WHERE workoutType = :type and label = :label")
+    @Query("SELECT AVG(distance * 1000 / length) FROM workout WHERE workoutType = :type and label = :label")
     fun getAverageSpeedByLabel(type: WorkoutType, label: String): Flow<Double>
 
     @Query("SELECT COUNT(*) FROM workout WHERE label = :label")
@@ -141,5 +141,8 @@ interface Dao{
     fun getLabelsOrdered(): Flow<List<WorkoutLabel>>
     @Query("SELECT * FROM workoutLabel WHERE workoutType = :type AND (SELECT COUNT(*) FROM workout WHERE label = workoutLabel.label)>0 ORDER BY label")
     fun getOrderedLabelsByType(type: WorkoutType): Flow<List<WorkoutLabel>>
+
+    @Query("DELETE FROM workout WHERE timestamp = :id")
+    suspend fun deleteWorkoutByID(id: Long)
 
 }

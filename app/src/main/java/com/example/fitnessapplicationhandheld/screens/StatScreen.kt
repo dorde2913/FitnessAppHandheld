@@ -31,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.fitnessapplicationhandheld.R
 import com.example.fitnessapplicationhandheld.database.models.Workout
 import com.example.fitnessapplicationhandheld.database.models.WorkoutType
+import com.example.fitnessapplicationhandheld.formatLength
 import com.example.fitnessapplicationhandheld.stateholders.WorkoutViewModel
 import com.example.fitnessapplicationhandheld.uicomponents.Spinner
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
@@ -42,6 +43,9 @@ import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesian
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoZoomState
 import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import com.patrykandpatrick.vico.compose.common.rememberHorizontalLegend
+import com.patrykandpatrick.vico.core.cartesian.CartesianDrawingContext
+import com.patrykandpatrick.vico.core.cartesian.CartesianMeasuringContext
 import com.patrykandpatrick.vico.core.cartesian.Zoom
 import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
@@ -49,7 +53,13 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer
 import com.patrykandpatrick.vico.core.common.Fill
+import com.patrykandpatrick.vico.core.common.HorizontalLegend
+import com.patrykandpatrick.vico.core.common.Legend
+import com.patrykandpatrick.vico.core.common.LegendItem
 import com.patrykandpatrick.vico.core.common.component.LineComponent
+import com.patrykandpatrick.vico.core.common.component.ShapeComponent
+import com.patrykandpatrick.vico.core.common.component.TextComponent
+import com.patrykandpatrick.vico.core.common.shape.Shape
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -77,12 +87,16 @@ fun StatScreen(modifier: Modifier = Modifier, viewModel: WorkoutViewModel, cardC
     val averageDistance by viewModel.getAverageDistance().collectAsState(initial = 0)
     val averageSpeed by viewModel.getAverageSpeed().collectAsState(initial = 0)
 
-    val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
 
 
     val modelProducer = remember { CartesianChartModelProducer()}
 
     val cardioModelProducer = remember{ CartesianChartModelProducer()}
+
+
+
+
+
     LaunchedEffect(workouts,labels) {
         //println(HRMaxes.size)
         if (workouts.isNotEmpty() && labels.isNotEmpty()) {
@@ -132,8 +146,13 @@ fun StatScreen(modifier: Modifier = Modifier, viewModel: WorkoutViewModel, cardC
                     series(0)
                 }
             }
+
+
         }
     }
+
+
+
 
 
     val columnComponents =
@@ -185,6 +204,27 @@ fun StatScreen(modifier: Modifier = Modifier, viewModel: WorkoutViewModel, cardC
             )
 
             if (workouts.isNotEmpty() && labels.isNotEmpty()){
+
+                val legend:  Legend<CartesianMeasuringContext, CartesianDrawingContext> =
+                    HorizontalLegend(
+                        items = {
+                            labels.forEach{
+                                println("added legend item")
+                                this.add(
+                                    LegendItem(
+                                        icon = ShapeComponent(shape = Shape.Rectangle, fill = Fill(it.color)),
+                                        label = it.label,
+                                        labelComponent = TextComponent(color = cardColors.contentColor.toArgb())
+                                    )
+                                )
+
+                            }
+                        }
+                    )
+//                    rememberHorizontalLegend(
+//
+//                    )
+
                 CartesianChartHost(
                     rememberCartesianChart(
                         rememberColumnCartesianLayer(
@@ -231,8 +271,10 @@ fun StatScreen(modifier: Modifier = Modifier, viewModel: WorkoutViewModel, cardC
                                 fill = Fill(cardColors.contentColor.toArgb())
                             ),
                         ),
+                        legend = legend
 
-                        ),
+
+                    ),
 
                     zoomState = rememberVicoZoomState(
                         initialZoom = Zoom.x(workouts.size.toDouble())
@@ -243,6 +285,7 @@ fun StatScreen(modifier: Modifier = Modifier, viewModel: WorkoutViewModel, cardC
                         .fillMaxWidth(),
                 )
             }
+            else Text("NO DATA :(")
 
         }
         Spacer(modifier = Modifier.height(20.dp))
@@ -257,8 +300,7 @@ fun StatScreen(modifier: Modifier = Modifier, viewModel: WorkoutViewModel, cardC
             BasicStatRow(
                 icon = R.drawable.stopwatchicon_removebg_preview,
                 iconSize = 50,
-                value = LocalTime.ofNanoOfDay(averageLength.toLong() * 1_000_000)
-                    .format(formatter),
+                value = formatLength(averageLength.toLong()),
                 label = "Average Workout Length",
                 cardColors = cardColors
             )
@@ -343,6 +385,22 @@ fun StatScreen(modifier: Modifier = Modifier, viewModel: WorkoutViewModel, cardC
                                 fill = Fill(cardColors.contentColor.toArgb())
                             ),
                         ),
+                        legend = rememberHorizontalLegend(
+                            items = {
+
+                                labels.forEach {
+                                    this.add(
+                                        LegendItem(
+                                            label = it.label,
+                                            labelComponent = TextComponent(color = cardColors.contentColor.toArgb()),
+                                            icon = ShapeComponent(shape = Shape.Rectangle, fill = Fill(it.color))
+                                        )
+                                    )
+
+                                }
+
+                            }
+                        )
 
                         ),
 
@@ -355,7 +413,7 @@ fun StatScreen(modifier: Modifier = Modifier, viewModel: WorkoutViewModel, cardC
                         .fillMaxWidth(),
                 )
             }
-
+            else Text("NO DATA :(")
 
         }
 

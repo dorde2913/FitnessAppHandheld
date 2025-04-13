@@ -69,6 +69,8 @@ class WorkoutRepository @Inject constructor(
             }
         }
 
+    suspend fun deleteWorkout(id: Long) =
+        dao.deleteWorkoutByID(id)
     fun getCardioWorkouts() =
         dao.getWorkoutsByType(WorkoutType.CARDIO)
 

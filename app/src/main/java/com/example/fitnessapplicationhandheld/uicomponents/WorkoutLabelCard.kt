@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -88,7 +89,9 @@ fun WorkoutLabelCard(
                         horizontalArrangement = Arrangement.End
                     ){
                         if (selected)
-                            Icon(Icons.Default.CheckCircle,null, modifier = Modifier.padding(15.dp).size(30.dp))
+                            Icon(Icons.Default.CheckCircle,null, modifier = Modifier.padding(5.dp).size(30.dp))
+                        else
+                            Box(modifier = Modifier.padding(5.dp).size(30.dp).clip(CircleShape).background(MaterialTheme.colorScheme.background))
                     }
                 }
             }

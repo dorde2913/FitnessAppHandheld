@@ -3,7 +3,6 @@ package com.example.fitnessapplicationhandheld.uicomponents
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -22,24 +21,17 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.work.workDataOf
 import com.example.fitnessapplicationhandheld.R
 import com.example.fitnessapplicationhandheld.database.models.Location
-import com.example.fitnessapplicationhandheld.database.models.Workout
 import com.example.fitnessapplicationhandheld.screens.BasicStatRow
-import com.example.fitnessapplicationhandheld.uicomponents.workout.formatDistance
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
 
 @Composable
 fun CardioStatsCard(
@@ -54,10 +46,6 @@ fun CardioStatsCard(
 
     val route = locationList.map{coords-> LatLng(coords.latitude,coords.longitude) }
 
-    val polylineOptions = PolylineOptions()
-        .addAll(route)
-        .width(5f)
-        .color(Color.Red.toArgb())
 
     val cameraPositionState = rememberCameraPositionState()
 
@@ -101,7 +89,6 @@ fun CardioStatsCard(
                     )
 
                 ){
-
 
                     Polyline(
                         points = route,
