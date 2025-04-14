@@ -173,7 +173,7 @@ fun CircularIndicatorColumn(
                     TextField(
                         value = textFieldValue,
                         onValueChange = {
-                            if (it.toIntOrNull() != null)textFieldValue = it
+                            if (it.toIntOrNull() != null || it == "")textFieldValue = it
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
