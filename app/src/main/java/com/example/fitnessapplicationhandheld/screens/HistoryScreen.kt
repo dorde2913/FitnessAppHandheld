@@ -59,11 +59,8 @@ fun HistoryScreen(modifier: Modifier = Modifier, viewModel: WorkoutViewModel, ca
     val workouts by viewModel.workouts.collectAsState(initial = listOf())
 
 
-
-
     LazyColumn(
         modifier = Modifier.fillMaxSize()
-            .padding(top = 20.dp)
             .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
             .background(BottomAppBarDefaults.containerColor)
     ) {

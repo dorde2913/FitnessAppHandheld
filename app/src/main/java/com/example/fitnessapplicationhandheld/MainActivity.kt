@@ -29,19 +29,6 @@ val CALS_KEY = intPreferencesKey("daily_cals")
 val CALS_GOAL_KEY = intPreferencesKey("cals_goal")
 
 
-//context.dataStore.edit { preferences->
-//    if (preferences[MIN_KEY] == null){
-//        preferences[MIN_KEY] = heartrate
-//    }
-//    if (preferences[MAX_KEY] == null){
-//        preferences[MAX_KEY] = heartrate
-//    }
-//}
-//
-//val min by context.dataStore.data
-//    .map{
-//        it[MIN_KEY]
-//    }.collectAsState(initial = 0)
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

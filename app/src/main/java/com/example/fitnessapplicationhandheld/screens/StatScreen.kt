@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.fitnessapplicationhandheld.R
 import com.example.fitnessapplicationhandheld.database.models.Workout
+import com.example.fitnessapplicationhandheld.database.models.WorkoutLabel
 import com.example.fitnessapplicationhandheld.database.models.WorkoutType
 import com.example.fitnessapplicationhandheld.formatLength
 import com.example.fitnessapplicationhandheld.stateholders.WorkoutViewModel
@@ -84,8 +85,8 @@ fun StatScreen(modifier: Modifier = Modifier, viewModel: WorkoutViewModel, cardC
     val averageCals by viewModel.getAverageCaloriesByType(selected).collectAsState(initial = 0.0)
     val averageBPM by viewModel.getAverageBPMByType(selected).collectAsState(initial = 0.0)
 
-    val averageDistance by viewModel.getAverageDistance().collectAsState(initial = 0)
-    val averageSpeed by viewModel.getAverageSpeed().collectAsState(initial = 0)
+    val averageDistance by viewModel.getAverageDistance().collectAsState(initial = 0.0)
+    val averageSpeed by viewModel.getAverageSpeed().collectAsState(initial = 0.0)
 
 
 
@@ -191,103 +192,13 @@ fun StatScreen(modifier: Modifier = Modifier, viewModel: WorkoutViewModel, cardC
             )
         }
 
-        Card(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp),
-            colors = cardColors
-        ) {
-            Text(
-                "Calories burned per workout",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-
-            if (workouts.isNotEmpty() && labels.isNotEmpty()){
-
-                val legend:  Legend<CartesianMeasuringContext, CartesianDrawingContext> =
-                    HorizontalLegend(
-                        items = {
-                            labels.forEach{
-                                println("added legend item")
-                                this.add(
-                                    LegendItem(
-                                        icon = ShapeComponent(shape = Shape.Rectangle, fill = Fill(it.color)),
-                                        label = it.label,
-                                        labelComponent = TextComponent(color = cardColors.contentColor.toArgb())
-                                    )
-                                )
-
-                            }
-                        }
-                    )
-//                    rememberHorizontalLegend(
-//
-//                    )
-
-                CartesianChartHost(
-                    rememberCartesianChart(
-                        rememberColumnCartesianLayer(
-                            columnProvider = ColumnCartesianLayer.ColumnProvider.series(
-                                columnComponents
-                            ),
-                        )
-                        ,
-                        startAxis = VerticalAxis.rememberStart(
-                            line = LineComponent(
-                                fill = Fill(cardColors.contentColor.toArgb()),
-                            ),
-                            label = rememberAxisLabelComponent(
-                                color = cardColors.contentColor,
-                            ),
-                            guideline = rememberLineComponent(
-                                thickness = 0.dp
-                            ),
-                            tick = rememberAxisTickComponent(
-                                fill = Fill(cardColors.contentColor.toArgb())
-                            )
-                        ),
-                        bottomAxis = HorizontalAxis.rememberBottom(
-                            line = LineComponent(
-                                fill = Fill(cardColors.contentColor.toArgb()),
-                            ),
-                            valueFormatter = { context, value, verticalAxisPosition ->
-                                val index = value.toInt()
-                                val dateFormatter = DateTimeFormatter.ofPattern("MM.dd.yyyy")
-
-                                if (index < workouts.size)
-                                    LocalDateTime.ofInstant(
-                                        Instant.ofEpochSecond(workouts[index].timestamp),
-                                        ZoneId.systemDefault()).format(dateFormatter)
-                                else "error"
-                            },
-                            label = rememberAxisLabelComponent(
-                                color = cardColors.contentColor,
-                            ),
-                            guideline = rememberLineComponent(
-                                thickness = 0.dp
-                            ),
-                            tick = rememberAxisTickComponent(
-                                fill = Fill(cardColors.contentColor.toArgb())
-                            ),
-                        ),
-                        legend = legend
-
-
-                    ),
-
-                    zoomState = rememberVicoZoomState(
-                        initialZoom = Zoom.x(workouts.size.toDouble())
-                    ),
-                    modelProducer = modelProducer,
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .fillMaxWidth(),
-                )
-            }
-            else Text("NO DATA :(")
-
-        }
+        WorkoutColumnGraphCard(
+            modelProducer = modelProducer,
+            workouts = workouts,
+            labels = labels,
+            cardColors = cardColors,
+            cardLabel = "Calories burned per workout"
+        )
         Spacer(modifier = Modifier.height(20.dp))
 
         Card(
@@ -327,95 +238,13 @@ fun StatScreen(modifier: Modifier = Modifier, viewModel: WorkoutViewModel, cardC
 
 
         Spacer(modifier = Modifier.height(20.dp))
-        Card(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp),
-            colors = cardColors
-        ) {
-            Text(
-                "Distance crossed per workout",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-            if (workouts.isNotEmpty() && labels.isNotEmpty()){
-                CartesianChartHost(
-                    rememberCartesianChart(
-                        rememberColumnCartesianLayer(
-                            columnProvider = ColumnCartesianLayer.ColumnProvider.series(
-                                columnComponents
-                            ),
-                        )
-                        ,
-                        startAxis = VerticalAxis.rememberStart(
-                            line = LineComponent(
-                                fill = Fill(cardColors.contentColor.toArgb()),
-                            ),
-                            label = rememberAxisLabelComponent(
-                                color = cardColors.contentColor,
-                            ),
-                            guideline = rememberLineComponent(
-                                thickness = 0.dp
-                            ),
-                            tick = rememberAxisTickComponent(
-                                fill = Fill(cardColors.contentColor.toArgb())
-                            )
-                        ),
-                        bottomAxis = HorizontalAxis.rememberBottom(
-                            line = LineComponent(
-                                fill = Fill(cardColors.contentColor.toArgb()),
-                            ),
-                            valueFormatter = { context, value, verticalAxisPosition ->
-                                val index = value.toInt()
-                                val dateFormatter = DateTimeFormatter.ofPattern("MM.dd.yyyy")
-
-                                if (index < workouts.size)
-                                    LocalDateTime.ofInstant(
-                                        Instant.ofEpochSecond(workouts[index].timestamp),
-                                        ZoneId.systemDefault()).format(dateFormatter)
-                                else "error"
-                            },
-                            label = rememberAxisLabelComponent(
-                                color = cardColors.contentColor,
-                            ),
-                            guideline = rememberLineComponent(
-                                thickness = 0.dp
-                            ),
-                            tick = rememberAxisTickComponent(
-                                fill = Fill(cardColors.contentColor.toArgb())
-                            ),
-                        ),
-                        legend = rememberHorizontalLegend(
-                            items = {
-
-                                labels.forEach {
-                                    this.add(
-                                        LegendItem(
-                                            label = it.label,
-                                            labelComponent = TextComponent(color = cardColors.contentColor.toArgb()),
-                                            icon = ShapeComponent(shape = Shape.Rectangle, fill = Fill(it.color))
-                                        )
-                                    )
-
-                                }
-
-                            }
-                        )
-
-                        ),
-
-                    zoomState = rememberVicoZoomState(
-                        initialZoom = Zoom.x(workouts.size.toDouble())
-                    ),
-                    modelProducer = cardioModelProducer,
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .fillMaxWidth(),
-                )
-            }
-            else Text("NO DATA :(")
-
-        }
+        WorkoutColumnGraphCard(
+            modelProducer = cardioModelProducer,
+            workouts = workouts,
+            labels = labels,
+            cardColors = cardColors,
+            cardLabel = "Distance crossed per workout"
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -443,10 +272,127 @@ fun StatScreen(modifier: Modifier = Modifier, viewModel: WorkoutViewModel, cardC
 
         }
 
+        Spacer(modifier = Modifier.height(20.dp))
+
 
 
     }
 }
 
+
+@Composable
+fun WorkoutColumnGraphCard(
+    modelProducer: CartesianChartModelProducer,
+    workouts: List<Workout>,
+    labels: List<WorkoutLabel>,
+    cardColors: CardColors,
+    cardLabel: String,
+
+){
+
+    val columnComponents =
+        if (labels.isNotEmpty()){
+            labels.map{
+                rememberLineComponent(
+                    fill = Fill(it.color), thickness = 30.dp
+                )
+            }
+        }
+        else {
+            listOf(rememberLineComponent(
+                fill = Fill(Color.Blue.toArgb())
+            ))
+        }
+
+
+    val legend: Legend<CartesianMeasuringContext, CartesianDrawingContext> = HorizontalLegend(
+        items = {
+            labels.forEach {
+                this.add(
+                    LegendItem(
+                        label = it.label,
+                        labelComponent = TextComponent(color = cardColors.contentColor.toArgb()),
+                        icon = ShapeComponent(shape = Shape.Rectangle, fill = Fill(it.color))
+                    )
+                )
+
+            }
+        }
+    )
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp),
+        colors = cardColors
+    ) {
+        Text(
+            cardLabel,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+        if (workouts.isNotEmpty() && labels.isNotEmpty()){
+            CartesianChartHost(
+                rememberCartesianChart(
+                    rememberColumnCartesianLayer(
+                        columnProvider = ColumnCartesianLayer.ColumnProvider.series(
+                            columnComponents
+                        ),
+                    )
+                    ,
+                    startAxis = VerticalAxis.rememberStart(
+                        line = LineComponent(
+                            fill = Fill(cardColors.contentColor.toArgb()),
+                        ),
+                        label = rememberAxisLabelComponent(
+                            color = cardColors.contentColor,
+                        ),
+                        guideline = rememberLineComponent(
+                            thickness = 0.dp
+                        ),
+                        tick = rememberAxisTickComponent(
+                            fill = Fill(cardColors.contentColor.toArgb())
+                        )
+                    ),
+                    bottomAxis = HorizontalAxis.rememberBottom(
+                        line = LineComponent(
+                            fill = Fill(cardColors.contentColor.toArgb()),
+                        ),
+                        valueFormatter = { context, value, verticalAxisPosition ->
+                            val index = value.toInt()
+                            val dateFormatter = DateTimeFormatter.ofPattern("MM.dd.yyyy")
+
+                            if (index < workouts.size)
+                                LocalDateTime.ofInstant(
+                                    Instant.ofEpochSecond(workouts[index].timestamp),
+                                    ZoneId.systemDefault()).format(dateFormatter)
+                            else "error"
+                        },
+                        label = rememberAxisLabelComponent(
+                            color = cardColors.contentColor,
+                        ),
+                        guideline = rememberLineComponent(
+                            thickness = 0.dp
+                        ),
+                        tick = rememberAxisTickComponent(
+                            fill = Fill(cardColors.contentColor.toArgb())
+                        ),
+                    ),
+                    legend = legend
+
+                ),
+
+                zoomState = rememberVicoZoomState(
+                    initialZoom = Zoom.x(workouts.size.toDouble())
+                ),
+                modelProducer = modelProducer,
+                modifier = Modifier
+                    .padding(horizontal = 10.dp)
+                    .fillMaxWidth(),
+            )
+        }
+        else Text("NO DATA :(")
+    }
+}
 
 

@@ -62,6 +62,7 @@ fun WorkoutLabelCard(
             .padding(10.dp)
             .heightIn(max = 180.dp)
             .combinedClickable(
+                enabled = true,
                 onLongClick = {
                     if (!selectMode) {
                         onHold()

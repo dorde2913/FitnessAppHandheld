@@ -42,6 +42,8 @@ class WorkoutRepository @Inject constructor(
     fun getAverageBPM(parentId: Long) =
         dao.getAverageBPM(parentId)
 
+    suspend fun deleteHRList() =
+        dao.deleteHRList()
     fun getOrderedLabelsByType(type: WorkoutType) =
         dao.getOrderedLabelsByType(type)
 
@@ -51,8 +53,13 @@ class WorkoutRepository @Inject constructor(
     suspend fun deleteLabel(label: String) =
         dao.delete(label)
 
+
+
     fun getRoute(id: Long) =
         dao.getRoute(id)
+
+    fun getAverageBPM() =
+        dao.getAverageBPM()
 
     fun getWorkoutsByLabel(label: String) =
         dao.getWorkoutsByLabel(label)

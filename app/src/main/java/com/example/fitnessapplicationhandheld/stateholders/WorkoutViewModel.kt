@@ -1,6 +1,7 @@
 package com.example.fitnessapplicationhandheld.stateholders
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -12,7 +13,11 @@ import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -36,10 +41,13 @@ class WorkoutViewModel @Inject constructor(
 
     var workoutDeletionList: MutableList<Long> = mutableListOf()
 
+
+
+
     fun deleteSelectedLabels(){
         viewModelScope.launch {
             for (label in deletionList){
-                //repository.deleteWorkoutByLabel(label)
+                repository.deleteWorkoutByLabel(label)
                 repository.deleteLabel(label)
             }
         }
@@ -47,8 +55,12 @@ class WorkoutViewModel @Inject constructor(
         sendWorkoutLabels()
     }
 
-    suspend fun deleteWorkout(id: Long) =
+    suspend fun deleteWorkout(id: Long) {
         repository.deleteWorkout(id)
+        repository.deleteHRList()
+        updateWatchStats()
+    }
+
 
     fun getOrderedLabelsByType(type: WorkoutType) =
         repository.getOrderedLabelsByType(type)
@@ -95,6 +107,57 @@ class WorkoutViewModel @Inject constructor(
             .addOnFailureListener { exception->
                 Log.d("DataClient","Failed to send: $exception")
             }
+    }
+
+
+    private fun sendToWatch(data: ByteArray, label: String){
+
+        val dataMapRequest = PutDataMapRequest.create("/$label").apply{
+            dataMap.putByteArray(label, data)
+        }
+        val putDataRequest = dataMapRequest.asPutDataRequest().setUrgent()
+
+        val uri = Uri.Builder()
+            .scheme("wear")
+            .path(label)
+            .build()
+
+        dataClient.deleteDataItems(uri).addOnSuccessListener { dataItem->
+            Log.d("DataClient", "DataItem deleted: $dataItem")
+        }
+            .addOnFailureListener { exception->
+                Log.d("DataClient","Failed to delete: $exception")
+            }
+
+
+        dataClient.putDataItem(putDataRequest)
+            .addOnSuccessListener { dataItem->
+                Log.d("DataClient", "DataItem saved: $dataItem")
+            }
+            .addOnFailureListener { exception->
+                Log.d("DataClient","Failed to send: $exception")
+            }
+    }
+
+    private fun updateWatchStats(){
+
+        CoroutineScope(Dispatchers.IO).launch {
+            combine(repository.workouts,
+                repository.getCardioWorkouts(),
+                repository.getAverageBPM(),
+            ){ allWorkouts, cardioWorkouts, averageBPM ->
+                SimpleStats(
+                    length = allWorkouts.map{it.length}.average().toLong(),
+                    calories = allWorkouts.map { it.calories }.average().toLong(),
+                    bpm = averageBPM.toLong(),
+                    distance = cardioWorkouts.map { it.distance }.average().toLong(),
+                    numWorkouts = allWorkouts.size.toLong(),
+                    numCardio = cardioWorkouts.size.toLong()
+                )
+            }.collectLatest {
+                sendToWatch(Json.encodeToString(it).toByteArray(), "simple_stats")
+            }
+        }
     }
 
     private fun sendWorkoutLabels(){
@@ -173,4 +236,14 @@ class WorkoutViewModel @Inject constructor(
 @Serializable
 data class LabelList(
     val list : List<WorkoutLabel> = listOf()
+)
+
+@Serializable
+data class SimpleStats(
+    val length: Long,
+    val calories: Long,
+    val numWorkouts: Long,
+    val numCardio: Long,
+    val distance: Long,
+    val bpm: Long
 )

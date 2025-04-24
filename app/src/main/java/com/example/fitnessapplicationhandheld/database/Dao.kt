@@ -124,7 +124,7 @@ interface Dao{
     @Query("SELECT AVG(distance) FROM workout WHERE workoutType = :type and label = :label")
     fun getAverageDistanceByLabel(type: WorkoutType, label: String): Flow<Double>
 
-    @Query("SELECT AVG(distance * 1000 / length) FROM workout WHERE workoutType = :type")
+    @Query("SELECT AVG(distance * 1000 / (length * 1.0)) FROM workout WHERE workoutType = :type")
     fun getAverageSpeed(type: WorkoutType): Flow<Double> //average average speed, :)
 
     @Query("SELECT AVG(distance * 1000 / length) FROM workout WHERE workoutType = :type and label = :label")
@@ -144,5 +144,11 @@ interface Dao{
 
     @Query("DELETE FROM workout WHERE timestamp = :id")
     suspend fun deleteWorkoutByID(id: Long)
+
+    @Query("SELECT AVG(avg) FROM (SELECT AVG(value) as avg FROM HRLIST GROUP BY parentID)")
+    fun getAverageBPM(): Flow<Double>
+
+    @Query("DELETE FROM hrlist WHERE parentID NOT IN (SELECT timeStamp FROM workout)")
+    suspend fun deleteHRList()
 
 }

@@ -87,17 +87,17 @@ fun WorkoutDetailsScreen(modifier: Modifier = Modifier, id: Long, cardColors: Ca
 
         val comparisonLength by
         if (comparison == all)
-            viewModel.getAverageLengthByType(WorkoutType.CARDIO).collectAsState(initial = 0.0)
+            viewModel.getAverageLengthByType(workout.workoutType).collectAsState(initial = 0.0)
         else viewModel.getAverageLengthByLabel(comparison).collectAsState(initial = 0.0)
 
         val comparisonCalories by
         if (comparison == all)
-            viewModel.getAverageCaloriesByType(WorkoutType.CARDIO).collectAsState(initial = 0.0)
+            viewModel.getAverageCaloriesByType(workout.workoutType).collectAsState(initial = 0.0)
         else viewModel.getAverageCaloriesByLabel(comparison).collectAsState(initial = 0.0)
 
         val comparisonBPM by
         if (comparison == all)
-            viewModel.getAverageBPMByType(WorkoutType.CARDIO).collectAsState(initial = 0.0)
+            viewModel.getAverageBPMByType(workout.workoutType).collectAsState(initial = 0.0)
         else viewModel.getAverageBPMByLabel(comparison).collectAsState(initial = 0.0)
 
 
