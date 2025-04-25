@@ -54,6 +54,8 @@ class WorkoutRepository @Inject constructor(
         dao.delete(label)
 
 
+    fun getMostRecentWorkout() =
+        dao.getMostRecentWorkout()
 
     fun getRoute(id: Long) =
         dao.getRoute(id)

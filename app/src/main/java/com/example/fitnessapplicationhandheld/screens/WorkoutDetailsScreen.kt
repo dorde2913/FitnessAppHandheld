@@ -59,7 +59,11 @@ import com.example.fitnessapplicationhandheld.uicomponents.workout.WorkoutIcon
 fun WorkoutDetailsScreen(modifier: Modifier = Modifier, id: Long, cardColors: CardColors,
                          viewModel: WorkoutViewModel){
 
-    val workout by viewModel.getWorkout(id).collectAsState(initial = Workout())
+    val workout by
+        if (id != 0L)
+            viewModel.getWorkout(id).collectAsState(initial = Workout())
+        else
+            viewModel.getMostRecentWorkout().collectAsState(initial = Workout())
 
     if (workout != Workout()) {
 

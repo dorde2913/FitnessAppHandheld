@@ -151,4 +151,7 @@ interface Dao{
     @Query("DELETE FROM hrlist WHERE parentID NOT IN (SELECT timeStamp FROM workout)")
     suspend fun deleteHRList()
 
+    @Query("SELECT * FROM workout ORDER BY timestamp DESC")
+    fun getMostRecentWorkout(): Flow<Workout>
+
 }

@@ -43,6 +43,8 @@ class WorkoutViewModel @Inject constructor(
 
 
 
+    fun getMostRecentWorkout() =
+        repository.getMostRecentWorkout()
 
     fun deleteSelectedLabels(){
         viewModelScope.launch {
@@ -53,6 +55,7 @@ class WorkoutViewModel @Inject constructor(
         }
         deletionList = mutableListOf()
         sendWorkoutLabels()
+        updateWatchStats()
     }
 
     suspend fun deleteWorkout(id: Long) {

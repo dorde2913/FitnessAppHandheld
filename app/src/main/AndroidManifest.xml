@@ -34,6 +34,7 @@
                 <data android:host="open"/>
                 <data android:path="/daily"/>
                 <data android:path="/stats"/>
+                <data android:path="/recent"/>
             </intent-filter>
 
         </activity>

@@ -29,6 +29,8 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,6 +45,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.fitnessapplicationhandheld.database.models.Workout
 import com.example.fitnessapplicationhandheld.screens.FitnessGoalsScreen
 import com.example.fitnessapplicationhandheld.screens.HistoryScreen
 import com.example.fitnessapplicationhandheld.screens.NewWorkoutScreen
@@ -51,6 +54,7 @@ import com.example.fitnessapplicationhandheld.screens.TodaysActivityScreen
 import com.example.fitnessapplicationhandheld.screens.WorkoutDetailsScreen
 import com.example.fitnessapplicationhandheld.screens.WorkoutLabelsScreen
 import com.example.fitnessapplicationhandheld.stateholders.WorkoutViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun FitnessHandheldApp(modifier: Modifier = Modifier,
@@ -73,6 +77,12 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
 
     val navigateToWorkoutDetails = { id: Long ->
         navController.navigate("${DestinationWorkoutDetails.route}/$id")
+    }
+
+    LaunchedEffect(Unit) {
+        if (path == "/recent"){
+            navigateToWorkoutDetails(0)
+        }
     }
 
     val snackbarHostState = remember{ SnackbarHostState() }
@@ -176,7 +186,7 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = if (path == null) DestinationToday.route
+            startDestination = if (path == null || path == "/recent") DestinationToday.route
                                 else if (path == "/daily") DestinationToday.route
                                 else DestinationStats.route,
             modifier = Modifier.padding(innerPadding),
