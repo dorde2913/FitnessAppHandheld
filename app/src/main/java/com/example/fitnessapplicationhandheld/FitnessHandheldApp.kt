@@ -39,14 +39,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.fitnessapplicationhandheld.database.models.Workout
-import com.example.fitnessapplicationhandheld.screens.FitnessGoalsScreen
+
 import com.example.fitnessapplicationhandheld.screens.HistoryScreen
 import com.example.fitnessapplicationhandheld.screens.NewWorkoutScreen
 import com.example.fitnessapplicationhandheld.screens.StatScreen
@@ -76,7 +76,7 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
 
 
     val navigateToWorkoutDetails = { id: Long ->
-        navController.navigate("${DestinationWorkoutDetails.route}/$id")
+        navController.myNavigate("${DestinationWorkoutDetails.route}/$id")
     }
 
     LaunchedEffect(Unit) {
@@ -103,19 +103,21 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
                 currentRoute == DestinationNewWorkoutLabel.route) return@Scaffold
             NavigationBar{
                 bottomNavigationDestinations.forEach { navDestination ->
+                    val selected = currentRoute.startsWith(navDestination.route)
                     NavigationBarItem(
                         icon = {
                             val iconSize = if (navDestination == DestinationToday) 40.dp
                                             else 30.dp
                             if (navDestination.icon!=null)
+
                                 Icon(
-                                    imageVector = navDestination.icon!!,
+                                    imageVector = if (selected)navDestination.selectedIcon!! else navDestination.icon!!,
                                     contentDescription = null,
                                     modifier = Modifier.size(iconSize)
                                 )
                             else
                                 Icon(
-                                    painter = painterResource(navDestination.customIcon!!),
+                                    painter = painterResource(if (selected)navDestination.selectedCustomIcon!! else navDestination.customIcon!!),
                                     contentDescription = null,
                                     modifier = Modifier.size(iconSize)
                                 )
@@ -123,7 +125,7 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
                         label = {  },
                         selected = currentRoute.startsWith(navDestination.route),
                         onClick = {
-                            navController.navigate(navDestination.route)
+                            navController.myNavigate(navDestination.route)
                         },
                     )
                 }
@@ -174,7 +176,7 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
 
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(DestinationNewWorkoutLabel.route)
+                    navController.myNavigate(DestinationNewWorkoutLabel.route)
                 },
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 contentColor = MaterialTheme.colorScheme.tertiary
@@ -223,11 +225,6 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
                 WorkoutLabelsScreen(viewModel = viewModel, cardColors = cardColors)
             }
 
-//            composable(
-//                route = DestinationFitnessGoals.route
-//            ) {
-//                FitnessGoalsScreen(cardColors = cardColors)
-//            }
 
             composable(
                 route = DestinationNewWorkoutLabel.route
@@ -238,3 +235,9 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
         }
     }
 }
+
+fun NavController.myNavigate(route: String)=
+    navigate(route){
+        launchSingleTop = true
+        restoreState = true
+    }

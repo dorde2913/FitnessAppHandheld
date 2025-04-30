@@ -27,7 +27,7 @@ import com.example.fitnessapplicationhandheld.getWorkoutIcon
 import kotlin.math.roundToInt
 
 @Composable
-fun WorkoutIcon(boxSize: Int, workout: Workout, iconTint: Color){
+fun WorkoutIcon(modifier: Modifier = Modifier, boxSize: Int, workout: Workout, iconTint: Color){
     val ratio =
         if (workout.workoutType == WorkoutType.GYM) 1f
         else 0.7f

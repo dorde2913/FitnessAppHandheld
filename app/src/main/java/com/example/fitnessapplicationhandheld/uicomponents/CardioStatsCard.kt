@@ -32,6 +32,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.ktx.utils.sphericalDistance
 
 @Composable
 fun CardioStatsCard(
@@ -46,6 +47,23 @@ fun CardioStatsCard(
 
     val route = locationList.map{coords-> LatLng(coords.latitude,coords.longitude) }
 
+
+    val actualRoutes: MutableList<MutableList<LatLng>> = mutableListOf()
+    var n = 0
+    for (i in route.indices){
+        if (actualRoutes.size == n){
+            actualRoutes.add(mutableListOf())
+        }
+
+        actualRoutes[n].add(route[i])
+        if (i < route.size - 1){
+            if (route[i].sphericalDistance(route[i+1]) >= 50.0){
+                n++
+            }
+        }
+
+
+    }
 
     val cameraPositionState = rememberCameraPositionState()
 
@@ -68,7 +86,7 @@ fun CardioStatsCard(
                 Row(
                     modifier = Modifier.fillMaxWidth()
                 ){
-                    Text("Workout Route", fontSize = 20.sp,
+                    Text("Workout Route, ${locationList.size}", fontSize = 20.sp,
                         modifier = Modifier.padding(horizontal = 10.dp))
                 }
 
@@ -83,17 +101,21 @@ fun CardioStatsCard(
                         cameraPositionState.move(CameraUpdateFactory.newLatLngBounds(bounds, 100))
 
                     },
-                    uiSettings = MapUiSettings(
-                        scrollGesturesEnabled = false,
-                        scrollGesturesEnabledDuringRotateOrZoom = false
-                    )
+//                    uiSettings = MapUiSettings(
+//                        scrollGesturesEnabled = false,
+//                        scrollGesturesEnabledDuringRotateOrZoom = false
+//                    )
 
                 ){
 
-                    Polyline(
-                        points = route,
-                        color =  Color.Red
-                    )
+                    for (actualRoute in actualRoutes){
+                        println("line: ${actualRoute.size}")
+                        Polyline(
+                            points = actualRoute,
+                            color =  Color.Red,
+                        )
+                    }
+
 
                 }
                 BasicStatRow(
