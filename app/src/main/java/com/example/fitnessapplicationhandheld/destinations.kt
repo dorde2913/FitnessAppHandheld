@@ -1,6 +1,7 @@
 package com.example.fitnessapplicationhandheld
 
 import android.media.Image
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
@@ -9,56 +10,64 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.sharp.Home
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 interface Destination {
-    val icon: ImageVector?
-    val customIcon: Int?
     val route: String
     val topBarText: String
 }
 
 interface SelectableDestination: Destination{
-    val selectedIcon: ImageVector?
-    val selectedCustomIcon: Int?
+    val selectedIcon: @Composable()(Dp)->Unit
+    val icon: @Composable()(Dp)->Unit
 }
 
 object DestinationToday : SelectableDestination{
-    override val customIcon = null
-    override val icon = Icons.Outlined.Home
+    override val selectedIcon: @Composable (Dp) -> Unit
+        get() = {
+            Icon(Icons.Filled.Home,null, modifier = Modifier.size(it))
+        }
+    override val icon: @Composable()(Dp)->Unit = {
+        Icon(Icons.Outlined.Home,null, modifier = Modifier.size(it))
+    }
     override val route = "todays_activity"
     override val topBarText = "Today's Activities"
-    override val selectedIcon: ImageVector
-        get() = Icons.Filled.Home
-    override val selectedCustomIcon: Int?
-        get() = null
+
+
 }
 
 object DestinationStats : SelectableDestination {
-    override val customIcon = R.drawable.graphicon
-    override val icon = null
+    override val selectedIcon: @Composable (Dp) -> Unit
+        get() = {
+            Icon(painterResource(R.drawable.graphiconfilled),null, modifier = Modifier.size(it))
+        }
+    override val icon: @Composable()(Dp)->Unit = {
+        Icon(painterResource(R.drawable.graphicon),null, modifier = Modifier.size(it))
+    }
     override val route = "workout_stats"
     override val topBarText = "Workout Statistics"
-    override val selectedIcon: ImageVector?
-        get() = null
-    override val selectedCustomIcon: Int
-        get() = R.drawable.graphiconfilled
 }
 
 object DestinationHistory :SelectableDestination{
-    override val customIcon = R.drawable.historyicongood_removebg_preview
-    override val icon = null
+    override val selectedIcon: @Composable (Dp) -> Unit
+        get() = {
+            Icon(painterResource(R.drawable.filledhistoryicongood),null, modifier = Modifier.size(it))
+        }
+    override val icon: @Composable()(Dp)->Unit = {
+        Icon(painterResource(R.drawable.historyicongood_removebg_preview),null, modifier = Modifier.size(it))
+    }
     override val route = "workout_history"
     override val topBarText = "Workout History"
-    override val selectedIcon: ImageVector?
-        get() = null
-    override val selectedCustomIcon: Int
-        get() = R.drawable.filledhistoryicongood
 }
 
 object DestinationWorkoutDetails : Destination {
-    override val customIcon = null
-    override val icon = Icons.Default.Lock
+
     override val route = "workout_details"
     override val topBarText = "Workout Details"
 }
@@ -66,19 +75,21 @@ object DestinationWorkoutDetails : Destination {
 
 
 object DestinationWorkoutLabels : SelectableDestination{
-    override val customIcon = R.drawable.listicon
-    override val icon = null
+    override val selectedIcon: @Composable (Dp) -> Unit
+        get() = {
+            Icon(painterResource(R.drawable.selectedlisticon),null, modifier = Modifier.size(it))
+        }
+    override val icon: @Composable()(Dp)->Unit = {
+        Icon(painterResource(R.drawable.listicon),null, modifier = Modifier.size(it))
+    }
+
     override val route = "workout_labels"
     override val topBarText = "My Workouts"
-    override val selectedIcon: ImageVector?
-        get() = null
-    override val selectedCustomIcon: Int
-        get() = R.drawable.selectedlisticon
+
 }
 
 object DestinationNewWorkoutLabel : Destination {
-    override val customIcon = R.drawable.listicon
-    override val icon = null
+
     override val route = "new_workout"
     override val topBarText = "New Workout"
 }

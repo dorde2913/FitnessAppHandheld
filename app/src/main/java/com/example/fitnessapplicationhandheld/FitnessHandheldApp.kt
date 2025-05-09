@@ -108,19 +108,8 @@ fun FitnessHandheldApp(modifier: Modifier = Modifier,
                         icon = {
                             val iconSize = if (navDestination == DestinationToday) 40.dp
                                             else 30.dp
-                            if (navDestination.icon!=null)
+                            if (selected) navDestination.selectedIcon(iconSize) else navDestination.icon(iconSize)
 
-                                Icon(
-                                    imageVector = if (selected)navDestination.selectedIcon!! else navDestination.icon!!,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(iconSize)
-                                )
-                            else
-                                Icon(
-                                    painter = painterResource(if (selected)navDestination.selectedCustomIcon!! else navDestination.customIcon!!),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(iconSize)
-                                )
                         },
                         label = {  },
                         selected = currentRoute.startsWith(navDestination.route),
