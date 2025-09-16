@@ -15,11 +15,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -30,12 +28,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,7 +42,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-
 import com.example.fitnessapplicationhandheld.screens.HistoryScreen
 import com.example.fitnessapplicationhandheld.screens.NewWorkoutScreen
 import com.example.fitnessapplicationhandheld.screens.StatScreen
@@ -54,7 +49,6 @@ import com.example.fitnessapplicationhandheld.screens.TodaysActivityScreen
 import com.example.fitnessapplicationhandheld.screens.WorkoutDetailsScreen
 import com.example.fitnessapplicationhandheld.screens.WorkoutLabelsScreen
 import com.example.fitnessapplicationhandheld.stateholders.WorkoutViewModel
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun FitnessHandheldApp(modifier: Modifier = Modifier,
